@@ -12,3 +12,23 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum FragranceCategory {
+  HERBACEOUS
+  SMOKEY
+  FRUITY
+  FRESH
+  FLORAL
+  CITRUS
+}
+
+model Fragrance {
+  id          String            @id @default(uuid())
+  name        String
+  description String
+  category    FragranceCategory
+  created_at  DateTime
+  updated_at  DateTime
+  updated     DateTime
+  image_url   String
+}

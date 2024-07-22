@@ -1,0 +1,15 @@
+# Set the version of docker compose to use
+version: '3.9'
+
+# The containers that compose the project
+services:
+  db:
+    image: postgres:13
+    restart: unless-stopped
+    container_name: monday-interview
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: mondayinterview

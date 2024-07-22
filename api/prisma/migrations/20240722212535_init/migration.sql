@@ -7,10 +7,9 @@ CREATE TABLE "Fragrance" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "category" "FragranceCategory" NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-    "updated" TIMESTAMP(3) NOT NULL,
     "image_url" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "Fragrance_pkey" PRIMARY KEY ("id")
 );

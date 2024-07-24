@@ -1,7 +1,7 @@
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
 import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv";
+import { AppModule } from "./app.module";
 
 async function bootstrap() {
   // Load environment variables
@@ -19,6 +19,13 @@ async function bootstrap() {
   } catch (error) {
     console.error("Error connecting to the database:", error);
   }
+
+  app.enableCors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  });
+
   const PORT = 3000;
   await app.listen(PORT);
   console.log(`Application is running on port: ${PORT}`);

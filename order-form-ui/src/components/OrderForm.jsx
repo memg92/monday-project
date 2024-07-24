@@ -8,6 +8,7 @@ import {
   Button,
   Toast,
 } from "monday-ui-react-core";
+import { createOrder } from "../api/service";
 
 const OrderForm = () => {
   const [orderInputs, setOrderInputs] = useState({
@@ -16,8 +17,8 @@ const OrderForm = () => {
     email: "",
     phone: "",
     address: "",
-    fragrances: null,
-    quantity: null,
+    fragrances: [],
+    quantity: "",
     inscription: "",
   });
   const [error, setError] = useState(null);
@@ -69,29 +70,32 @@ const OrderForm = () => {
     return isValid;
   }
 
-  function onSubmit(event) {
+  async function onSubmit(event) {
     event.preventDefault();
+
     const { fragrances, quantity } = orderInputs;
     const isValid = validateInputs({ fragrances, quantity });
+
     if (isValid) {
-      window.alert("Order submitted successfully!");
-      setOrderSubmitted(true);
-      setOrderInputs({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        address: "",
-        fragrances: null,
-        quantity: null,
-        inscription: "",
-      });
+      const response = await createOrder(orderInputs);
+      console.log(response);
+      if (response?.data && response?.data?.create_item?.id) {
+        setOrderSubmitted(true);
+        setOrderInputs({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          address: "",
+          fragrances: [],
+          quantity: "",
+          inscription: "",
+        });
+      }
     }
   }
 
   console.log(orderInputs);
-  console.log(quantityValidationError);
-  console.log(fragrancesValidationError);
   return (
     <Box className="max-w-lg w-full py-2 px-4 mt-12 mx-auto bg-gray-100 rounded-md">
       <h2 className="text-lg font-bold py-4 text-gray-700">
@@ -103,6 +107,7 @@ const OrderForm = () => {
             <TextField
               placeholder="John"
               title="First Name *"
+              value={orderInputs.firstName}
               onChange={(value) =>
                 setOrderInputs({ ...orderInputs, firstName: value })
               }
@@ -114,6 +119,7 @@ const OrderForm = () => {
             <TextField
               placeholder="Doe"
               title="Last Name *"
+              value={orderInputs.lastName}
               onChange={(value) =>
                 setOrderInputs({ ...orderInputs, lastName: value })
               }
@@ -127,6 +133,7 @@ const OrderForm = () => {
             <TextField
               placeholder="john.doe@email.com"
               title="Email Address *"
+              value={orderInputs.email}
               onChange={(value) =>
                 setOrderInputs({ ...orderInputs, email: value })
               }
@@ -138,6 +145,7 @@ const OrderForm = () => {
             <TextField
               placeholder="1234567890"
               title="Telephone *"
+              value={orderInputs.phone}
               onChange={(value) =>
                 setOrderInputs({ ...orderInputs, phone: value })
               }
@@ -150,6 +158,7 @@ const OrderForm = () => {
           <TextField
             placeholder="123 Candle St., Candle City, 12345"
             title="Shipping Address *"
+            value={orderInputs.address}
             onChange={(value) =>
               setOrderInputs({ ...orderInputs, address: value })
             }
@@ -166,6 +175,7 @@ const OrderForm = () => {
               <Dropdown
                 placeholder={loading ? "Loading..." : "Choose fragrances"}
                 options={fragranceOptions}
+                value={orderInputs.fragrances}
                 multi
                 multiline
                 insideOverflowContainer={true}
@@ -180,6 +190,7 @@ const OrderForm = () => {
             <TextField
               placeholder="0"
               title="Quantity *"
+              value={orderInputs.quantity}
               onChange={(value) =>
                 setOrderInputs({ ...orderInputs, quantity: value })
               }
@@ -192,6 +203,7 @@ const OrderForm = () => {
           <TextField
             placeholder="My Candle"
             title="Inscription (Optional)"
+            value={orderInputs.inscription}
             onChange={(value) =>
               setOrderInputs({ ...orderInputs, inscription: value })
             }
@@ -223,6 +235,7 @@ const OrderForm = () => {
       </Toast>
       <Toast
         open={orderSubmitted}
+        autoHideDuration={5000}
         onClose={() => setOrderSubmitted(false)}
         type={Toast.types.POSITIVE}
         className="max-w-fit"

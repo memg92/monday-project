@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Flex, TextField, Dropdown, Button } from "monday-ui-react-core";
+import {
+  Box,
+  Flex,
+  TextField,
+  Dropdown,
+  Button,
+  Toast,
+} from "monday-ui-react-core";
 
 const OrderForm = () => {
   const [orderInputs, setOrderInputs] = useState({
@@ -14,8 +21,12 @@ const OrderForm = () => {
     inscription: "",
   });
   const [error, setError] = useState(null);
+  const [quantityValidationError, setQuantityValidationError] = useState(null);
+  const [fragrancesValidationError, setFragrancesValidationError] =
+    useState(null);
   const [fragranceOptions, setFragranceOptions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [orderSubmitted, setOrderSubmitted] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,15 +49,55 @@ const OrderForm = () => {
     fetchData();
   }, []);
 
+  function validateInputs({ fragrances, quantity }) {
+    let isValid = true;
+
+    if (!fragrances || fragrances.length !== 3) {
+      setFragrancesValidationError("Please select exactly 3 fragrances");
+      isValid = false;
+    } else {
+      setFragrancesValidationError(null);
+    }
+
+    if (!quantity || quantity < 1) {
+      setQuantityValidationError("Quantity must be greater than 0");
+      isValid = false;
+    } else {
+      setQuantityValidationError(null);
+    }
+
+    return isValid;
+  }
+
+  function onSubmit(event) {
+    event.preventDefault();
+    const { fragrances, quantity } = orderInputs;
+    const isValid = validateInputs({ fragrances, quantity });
+    if (isValid) {
+      window.alert("Order submitted successfully!");
+      setOrderSubmitted(true);
+      setOrderInputs({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        address: "",
+        fragrances: null,
+        quantity: null,
+        inscription: "",
+      });
+    }
+  }
+
+  console.log(orderInputs);
+  console.log(quantityValidationError);
+  console.log(fragrancesValidationError);
   return (
-    <Box
-      className="max-w-lg w-full p-2 mt-12 mx-auto"
-      backgroundColor={Box.backgroundColors.GREY_BACKGROUND_COLOR}
-    >
+    <Box className="max-w-lg w-full py-2 px-4 mt-12 mx-auto bg-gray-100 rounded-md">
       <h2 className="text-lg font-bold py-4 text-gray-700">
         Order Request Form
       </h2>
-      <form>
+      <form onSubmit={onSubmit}>
         <Flex direction={Flex.directions.COLUMN} gap={24} className="w-full">
           <Flex gap={16} className="w-full">
             <TextField
@@ -154,6 +205,30 @@ const OrderForm = () => {
           </Button>
         </Flex>
       </form>
+      <Toast
+        open={!!quantityValidationError}
+        onClose={() => setQuantityValidationError(null)}
+        type={Toast.types.NEGATIVE}
+        className="max-w-fit"
+      >
+        {quantityValidationError}
+      </Toast>
+      <Toast
+        open={!!fragrancesValidationError}
+        onClose={() => setFragrancesValidationError(null)}
+        type={Toast.types.NEGATIVE}
+        className="max-w-fit"
+      >
+        {fragrancesValidationError}
+      </Toast>
+      <Toast
+        open={orderSubmitted}
+        onClose={() => setOrderSubmitted(false)}
+        type={Toast.types.POSITIVE}
+        className="max-w-fit"
+      >
+        Order Submitted!
+      </Toast>
     </Box>
   );
 };

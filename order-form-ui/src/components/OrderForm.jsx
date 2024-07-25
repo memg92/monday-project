@@ -21,7 +21,7 @@ const OrderForm = () => {
     quantity: "",
     inscription: "",
   });
-  const [error, setError] = useState(null);
+  const [_error, setError] = useState(null);
   const [quantityValidationError, setQuantityValidationError] = useState(null);
   const [fragrancesValidationError, setFragrancesValidationError] =
     useState(null);
@@ -29,8 +29,9 @@ const OrderForm = () => {
   const [loading, setLoading] = useState(true);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
 
+  // fetch fragrances data from API
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFragrances = async () => {
       try {
         const response = await axios.get("http://localhost:3000/fragrances");
 
@@ -47,12 +48,13 @@ const OrderForm = () => {
       }
     };
 
-    fetchData();
+    fetchFragrances();
   }, []);
 
   function validateInputs({ fragrances, quantity }) {
     let isValid = true;
 
+    // ensure exactly 3 fragrances are selected
     if (!fragrances || fragrances.length !== 3) {
       setFragrancesValidationError("Please select exactly 3 fragrances");
       isValid = false;
@@ -60,6 +62,7 @@ const OrderForm = () => {
       setFragrancesValidationError(null);
     }
 
+    // ensure quantity is greater than 0
     if (!quantity || quantity < 1) {
       setQuantityValidationError("Quantity must be greater than 0");
       isValid = false;
@@ -76,9 +79,10 @@ const OrderForm = () => {
     const { fragrances, quantity } = orderInputs;
     const isValid = validateInputs({ fragrances, quantity });
 
+    // if inputs are valid, create order – validateInputs will display error messages
     if (isValid) {
       const response = await createOrder(orderInputs);
-      console.log(response);
+      // if response is successful, clear the form
       if (response?.data && response?.data?.create_item?.id) {
         setOrderSubmitted(true);
         setOrderInputs({
@@ -95,7 +99,6 @@ const OrderForm = () => {
     }
   }
 
-  console.log(orderInputs);
   return (
     <Box className="max-w-lg w-full py-2 px-4 mt-12 mx-auto bg-gray-100 rounded-md">
       <h2 className="text-lg font-bold py-4 text-gray-700">
@@ -175,7 +178,6 @@ const OrderForm = () => {
               <Dropdown
                 placeholder={loading ? "Loading..." : "Choose fragrances"}
                 options={fragranceOptions}
-                value={orderInputs.fragrances}
                 multi
                 multiline
                 insideOverflowContainer={true}

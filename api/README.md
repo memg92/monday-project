@@ -45,17 +45,17 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Running migrations
 
 ```bash
-# unit tests
-$ npm run test
+# spin up docker container
+$ npm run start:backing-apps
 
-# e2e tests
-$ npm run test:e2e
+# run migrations
+$ npm run migrate:dev
 
-# test coverage
-$ npm run test:cov
+# (optional) use Prisma GUI to interact with DB
+$ npx prisma studio
 ```
 
 ## Support

@@ -8,7 +8,7 @@ export async function createOrder(orderInputs) {
     text: orderInputs.firstName,
     text6: orderInputs.lastName,
     text5: orderInputs.inscription,
-    email: { value: orderInputs.email },
+    email: { email: orderInputs.email, text: orderInputs.email },
     phone: orderInputs.phone,
     client_shipping_address__1: orderInputs.address,
     numbers: orderInputs.quantity,
@@ -16,8 +16,6 @@ export async function createOrder(orderInputs) {
       labels: orderInputs.fragrances.map((fragrance) => fragrance.label),
     },
   };
-
-  console.log(JSON.stringify(columnValueParams));
 
   try {
     const response = await monday.api(
@@ -29,12 +27,13 @@ export async function createOrder(orderInputs) {
       {
         variables: {
           boardId: Number(process.env.REACT_APP_PRODUCTION_BOARD),
-          itemName: orderInputs.firstName + " " + orderInputs.lastName,
+          itemName: `${orderInputs.firstName} ${orderInputs.lastName}`,
           columnValues: JSON.stringify(columnValueParams),
+          // create new labels if they don't exist
+          create_labels_if_missing: true,
         },
       }
     );
-    console.log("response:", response);
     return response;
   } catch (error) {
     console.error(error);
